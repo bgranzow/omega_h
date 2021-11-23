@@ -30,6 +30,9 @@ int main(int argc, char** argv) {
     if (set_types.find("side_sets") != std::string::npos) {
       classify_with |= Omega_h::exodus::SIDE_SETS;
     }
+    if (set_types.find("vert_nodes") != std::string::npos) {
+      classify_with |= Omega_h::exodus::VERT_NODES;
+    }
   } else {
     classify_with = Omega_h::exodus::NODE_SETS | Omega_h::exodus::SIDE_SETS;
   }

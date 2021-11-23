@@ -34,6 +34,7 @@ namespace exodus {
 enum ClassifyWith {
   NODE_SETS = 0x1,
   SIDE_SETS = 0x2,
+  VERT_NODES = 0x9,
 };
 int open(filesystem::path const& path, bool verbose = false);
 void close(int exodus_file);

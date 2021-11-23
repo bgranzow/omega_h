@@ -406,6 +406,37 @@ void read_mesh(int file, Mesh* mesh, bool verbose, int classify_with) {
   mesh->add_tag(dim, "class_id", 1, elem_class_ids);
   mesh->add_tag(dim - 1, "class_id", 1, side_class_ids);
   mesh->set_tag(dim - 1, "class_dim", side_class_dims);
+  { // bng - this is cheese
+    if ((classify_with >= VERT_NODES) && init_params.num_node_sets) {
+      Write<LO> vert_class_ids_w(mesh->nents(0), -1);
+      Write<I8> vert_class_dims_w(mesh->nents(VERT), 0);
+      std::vector<char> names_memory;
+      std::vector<char*> name_ptrs;
+      setup_names(int(init_params.num_side_sets), names_memory, name_ptrs);
+      CALL(ex_get_names(file, EX_NODE_SET, name_ptrs.data()));
+      std::vector<int> node_set_ids(std::size_t(init_params.num_node_sets));
+      CALL(ex_get_ids(file, EX_NODE_SET, node_set_ids.data()));
+      for (int i = 0; i < node_set_ids.size(); ++i) {
+        int nentries, ndist_factors;
+        CALL(ex_get_set_param(
+              file, EX_NODE_SET, node_set_ids[i], &nentries, &ndist_factors));
+        HostWrite<LO> h_set_nodes2nodes(nentries);
+        CALL(ex_get_set(file, EX_NODE_SET, node_set_ids[i],
+              h_set_nodes2nodes.data(), nullptr));
+        auto set_nodes2nodes =
+          subtract_from_each(LOs(h_set_nodes2nodes.write()), 1);
+        auto nodes_are_in_set = mark_image(set_nodes2nodes, mesh->nverts());
+        auto set_nodes2node = collect_marked(nodes_are_in_set);
+        map_value_into(node_set_ids[i], set_nodes2nodes,  vert_class_ids_w);
+        map_value_into(I8(0), set_nodes2nodes, vert_class_dims_w);
+        mesh->class_sets[name_ptrs[i]].push_back({I8(0), node_set_ids[i]});
+      }
+      auto vert_class_ids = LOs(vert_class_ids_w);
+      auto vert_class_dims = Read<I8>(vert_class_dims_w);
+      mesh->add_tag(VERT, "class_id", 1, vert_class_ids);
+      mesh->add_tag(VERT, "class_dim", 1, vert_class_dims);
+    }
+  } // bng - end cheese
   finalize_classification(mesh);
   end_code();
 }
