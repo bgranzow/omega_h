@@ -131,7 +131,7 @@ void Mesh::add_tag(Int ent_dim, std::string const& name, Int ncomps) {
   check_tag_name(name);
   OMEGA_H_CHECK(ncomps >= 0);
   OMEGA_H_CHECK(ncomps <= Int(INT8_MAX));
-  OMEGA_H_CHECK(tags_[ent_dim].size() < size_t(INT8_MAX));
+  OMEGA_H_CHECK(tags_[ent_dim].size() < size_t(INT32_MAX));
   TagPtr ptr(new Tag<T>(name, ncomps));
   tags_[ent_dim].push_back(std::move(ptr));
 }
@@ -150,7 +150,7 @@ void Mesh::add_tag(Int ent_dim, std::string const& name, Int ncomps,
     check_tag_name(name);
     OMEGA_H_CHECK(ncomps >= 0);
     OMEGA_H_CHECK(ncomps <= Int(INT8_MAX));
-    OMEGA_H_CHECK(tags_[ent_dim].size() < size_t(INT8_MAX));
+    OMEGA_H_CHECK(tags_[ent_dim].size() < size_t(INT32_MAX));
     tag = new Tag<T>(name, ncomps);
     TagPtr ptr(tag);
     tags_[ent_dim].push_back(std::move(ptr));

@@ -42,8 +42,11 @@ int main(int argc, char** argv) {
     Omega_h::exodus::read_mesh(exodus_file, &mesh, verbose, classify_with);
     auto ntime_steps = Omega_h::exodus::get_num_time_steps(exodus_file);
     if (ntime_steps > 0) {
-      Omega_h::exodus::read_nodal_fields(
-          exodus_file, &mesh, ntime_steps - 1, "", "", verbose);
+      for (int step = 0; step < ntime_steps; step++) {
+          Omega_h::exodus::read_nodal_fields(
+              exodus_file, &mesh, step, "", "_" + std::to_string(step),
+              verbose);
+      }
     }
     Omega_h::exodus::close(exodus_file);
   } else {
