@@ -74,7 +74,7 @@ bob_add_dependency(PRIVATE NAME Gmodel TARGETS gmodel)
 set(Omega_h_USE_SEACASExodus_DEFAULT OFF)
 set(SEACASExodus_PREFIX_DEFAULT ${Trilinos_PREFIX})
 bob_add_dependency(PUBLIC NAME SEACASExodus
-    TARGETS exodus
+    TARGETS SEACASExodus::exodus
     INCLUDE_DIR_VARS
       SEACASExodus_INCLUDE_DIRS
       SEACASExodus_TPL_INCLUDE_DIRS
